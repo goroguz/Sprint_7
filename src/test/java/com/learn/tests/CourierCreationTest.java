@@ -1,14 +1,18 @@
 package com.learn.tests;
 
+import com.learn.util.RestAssuredConfig;
 import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+
 import java.util.UUID;
+
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
@@ -21,12 +25,6 @@ public class CourierCreationTest {
     static String login;
     static Integer courierId;
 
-    @BeforeClass
-    public static void setUpClass() {
-        RestAssured.baseURI = "http://qa-scooter.praktikum-services.ru";
-        RestAssured.basePath = "/api/v1";
-    }
-
     @Before
     public void setup() {
         login = "courier_creation_" + UUID.randomUUID();
@@ -36,6 +34,7 @@ public class CourierCreationTest {
     @Step("Create a courier with a unique login")
     private void createCourier(String login) {
         given()
+            .spec(RestAssuredConfig.getBaseSpec())
             .contentType(ContentType.JSON)
             .body("{\"login\":\"" + login + "\", \"password\":\"" + PASSWORD + "\", \"firstName\":\"" + FIRST_NAME + "\"}")
             .when()
@@ -45,6 +44,7 @@ public class CourierCreationTest {
 
         // Сохраняем id для удаления
         Response loginResponse = given()
+            .spec(RestAssuredConfig.getBaseSpec())
             .contentType(ContentType.JSON)
             .body("{\"login\":\"" + login + "\", \"password\":\"" + PASSWORD + "\"}")
             .when()
@@ -59,6 +59,7 @@ public class CourierCreationTest {
     public void cleanupCourier() {
         if (courierId != null) {
             given()
+                .spec(RestAssuredConfig.getBaseSpec())
                 .when()
                 .delete("/courier/" + courierId)
                 .then()
@@ -77,6 +78,7 @@ public class CourierCreationTest {
     public void cannotCreateDuplicateCourier() {
         createCourier(login);
         given()
+            .spec(RestAssuredConfig.getBaseSpec())
             .contentType(ContentType.JSON)
             .body("{\"login\":\"" + login + "\", \"password\":\"" + PASSWORD + "\", \"firstName\":\"" + FIRST_NAME + "\"}")
             .when()
@@ -90,6 +92,7 @@ public class CourierCreationTest {
     @DisplayName("Cannot create courier without login")
     public void cannotCreateWithoutLogin() {
         given()
+            .spec(RestAssuredConfig.getBaseSpec())
             .contentType(ContentType.JSON)
             .body("{\"password\":\"" + PASSWORD + "\", \"firstName\":\"" + FIRST_NAME + "\"}")
             .when()
@@ -103,6 +106,7 @@ public class CourierCreationTest {
     @DisplayName("Cannot create courier without password")
     public void cannotCreateWithoutPassword() {
         given()
+            .spec(RestAssuredConfig.getBaseSpec())
             .contentType(ContentType.JSON)
             .body("{\"login\":\"" + login + "\", \"firstName\":\"" + FIRST_NAME + "\"}")
             .when()
@@ -117,6 +121,7 @@ public class CourierCreationTest {
     //according to the API, first name is not stated as optional, but API ignores it
     public void cannotCreateWithoutFirstName() {
         given()
+            .spec(RestAssuredConfig.getBaseSpec())
             .contentType(ContentType.JSON)
             .body("{\"login\":\"" + login + "\", \"password\":\"" + PASSWORD + "\"}")
             .when()
@@ -124,10 +129,5 @@ public class CourierCreationTest {
             .then()
             .statusCode(400)
             .body("message", containsString(NOT_ENOUGHT_DATA_TO_CREATE_ACOCUNT));
-    }
-
-    @AfterClass
-    public static void resetBasePath() {
-        RestAssured.basePath = "";
     }
 }

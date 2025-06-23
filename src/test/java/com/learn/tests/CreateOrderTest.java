@@ -1,10 +1,12 @@
 package com.learn.tests;
 
+import com.learn.util.RestAssuredConfig;
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -37,8 +39,6 @@ public class CreateOrderTest {
 
     @Before
     public void setup() {
-        RestAssured.baseURI = "http://qa-scooter.praktikum-services.ru";
-        RestAssured.basePath = "/api/v1";
         createdTrack = null;
     }
 
@@ -57,6 +57,7 @@ public class CreateOrderTest {
         order.put("color", color);
 
         Response response = given()
+            .spec(RestAssuredConfig.getBaseSpec())
             .contentType(ContentType.JSON)
             .body(order)
             .when()
@@ -73,6 +74,7 @@ public class CreateOrderTest {
     public void tearDown() {
         if (createdTrack != null) {
             given()
+                .spec(RestAssuredConfig.getBaseSpec())
                 .contentType(ContentType.JSON)
                 .body(Collections.singletonMap("track", createdTrack))
                 .when()
@@ -80,10 +82,5 @@ public class CreateOrderTest {
                 .then()
                 .statusCode(anyOf(is(200), is(400))); // 400 — если уже отменён вручную
         }
-    }
-
-    @AfterClass
-    public static void resetBasePath() {
-        RestAssured.basePath = "";
     }
 }
