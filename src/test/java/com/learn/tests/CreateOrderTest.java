@@ -17,6 +17,8 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.AnyOf.anyOf;
 import static org.hamcrest.core.Is.is;
 
+import io.qameta.allure.Description;
+
 @RunWith(Parameterized.class)
 public class CreateOrderTest {
 
@@ -44,6 +46,7 @@ public class CreateOrderTest {
 
     @Test
     @DisplayName("Create order with color variants")
+    @Description("Verifies that an order can be successfully created with different color options, including no color.")
     public void testCreateOrderWithColorVariantsTest() {
         Map<String, Object> order = new HashMap<>();
         order.put("firstName", "Test");
@@ -80,7 +83,7 @@ public class CreateOrderTest {
                 .when()
                 .put("/orders/cancel")
                 .then()
-                .statusCode(anyOf(is(200), is(400))); // 400 — если уже отменён вручную
+                .statusCode(anyOf(is(200), is(400))); // 400 — if already canceled
         }
     }
 }

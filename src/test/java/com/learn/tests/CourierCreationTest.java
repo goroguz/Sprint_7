@@ -2,6 +2,7 @@ package com.learn.tests;
 
 import com.learn.model.CourierModel;
 import com.learn.util.RestAssuredConfig;
+import io.qameta.allure.Description;
 import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.http.ContentType;
@@ -45,7 +46,6 @@ public class CourierCreationTest {
             .statusCode(anyOf(is(201), is(409)));
 
         courier = new CourierModel(login, PASSWORD, null);
-        // Сохраняем id для удаления
         Response loginResponse = given()
             .spec(RestAssuredConfig.getBaseSpec())
             .contentType(ContentType.JSON)
@@ -72,12 +72,14 @@ public class CourierCreationTest {
 
     @Test
     @DisplayName("Create courier with unique login")
+    @Description("Verifies that a new courier can be successfully created using a unique login.")
     public void createCourierWithUniqueLoginTest() {
         createCourier(login);
     }
 
     @Test
     @DisplayName("Cannot create courier with duplicate login")
+    @Description("Verifies that creating a courier with an already existing login returns a 409 Conflict status.")
     public void cannotCreateDuplicateCourierTest() {
         CourierModel courier = new CourierModel(login, PASSWORD, FIRST_NAME);
         createCourier(login);
@@ -94,6 +96,7 @@ public class CourierCreationTest {
 
     @Test
     @DisplayName("Cannot create courier without login")
+    @Description("Verifies that a courier cannot be created when the login is missing. Should return 400 Bad Request.")
     public void cannotCreateWithoutLoginTest() {
         CourierModel courier = new CourierModel(null, PASSWORD, FIRST_NAME);
         given()
@@ -109,6 +112,7 @@ public class CourierCreationTest {
 
     @Test
     @DisplayName("Cannot create courier without password")
+    @Description("Verifies that a courier cannot be created when the password is missing. Should return 400 Bad Request.")
     public void cannotCreateWithoutPasswordTest() {
         CourierModel courier = new CourierModel(login, null, FIRST_NAME);
         given()
@@ -124,6 +128,7 @@ public class CourierCreationTest {
 
     @Test
     @DisplayName("It is possible to create courier without first name")
+    @Description("Verifies that a courier can be created without specifying a first name. Should return 201 Created.")
     public void possibleToCreateWithoutFirstNameTest() {
         CourierModel courier = new CourierModel(login, PASSWORD, null);
         given()
