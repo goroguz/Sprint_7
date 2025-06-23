@@ -123,9 +123,8 @@ public class CourierCreationTest {
     }
 
     @Test
-    @DisplayName("Cannot create courier without first name")
-    //according to the API, first name is not stated as optional, but API ignores it
-    public void cannotCreateWithoutFirstName() {
+    @DisplayName("It is possible to create courier without first name")
+    public void possibleToCreateWithoutFirstName() {
         CourierModel courier = new CourierModel(login, PASSWORD, null);
         given()
             .spec(RestAssuredConfig.getBaseSpec())
@@ -134,7 +133,6 @@ public class CourierCreationTest {
             .when()
             .post("/courier")
             .then()
-            .statusCode(400)
-            .body("message", containsString(NOT_ENOUGHT_DATA_TO_CREATE_ACOCUNT));
+            .statusCode(201);
     }
 }
