@@ -1,5 +1,6 @@
 package com.learn.tests;
 
+import com.learn.model.CourierModel;
 import com.learn.util.RestAssuredConfig;
 import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
@@ -33,20 +34,22 @@ public class CourierCreationTest {
 
     @Step("Create a courier with a unique login")
     private void createCourier(String login) {
+        CourierModel courier = new CourierModel(login, PASSWORD, FIRST_NAME);
         given()
             .spec(RestAssuredConfig.getBaseSpec())
             .contentType(ContentType.JSON)
-            .body("{\"login\":\"" + login + "\", \"password\":\"" + PASSWORD + "\", \"firstName\":\"" + FIRST_NAME + "\"}")
+            .body(courier)
             .when()
             .post("/courier")
             .then()
             .statusCode(anyOf(is(201), is(409)));
 
+        courier = new CourierModel(login, PASSWORD, null);
         // Сохраняем id для удаления
         Response loginResponse = given()
             .spec(RestAssuredConfig.getBaseSpec())
             .contentType(ContentType.JSON)
-            .body("{\"login\":\"" + login + "\", \"password\":\"" + PASSWORD + "\"}")
+            .body(courier)
             .when()
             .post("/courier/login");
 
@@ -76,11 +79,12 @@ public class CourierCreationTest {
     @Test
     @DisplayName("Cannot create courier with duplicate login")
     public void cannotCreateDuplicateCourier() {
+        CourierModel courier = new CourierModel(login, PASSWORD, FIRST_NAME);
         createCourier(login);
         given()
             .spec(RestAssuredConfig.getBaseSpec())
             .contentType(ContentType.JSON)
-            .body("{\"login\":\"" + login + "\", \"password\":\"" + PASSWORD + "\", \"firstName\":\"" + FIRST_NAME + "\"}")
+            .body(courier)
             .when()
             .post("/courier")
             .then()
@@ -91,10 +95,11 @@ public class CourierCreationTest {
     @Test
     @DisplayName("Cannot create courier without login")
     public void cannotCreateWithoutLogin() {
+        CourierModel courier = new CourierModel(null, PASSWORD, FIRST_NAME);
         given()
             .spec(RestAssuredConfig.getBaseSpec())
             .contentType(ContentType.JSON)
-            .body("{\"password\":\"" + PASSWORD + "\", \"firstName\":\"" + FIRST_NAME + "\"}")
+            .body(courier)
             .when()
             .post("/courier")
             .then()
@@ -105,10 +110,11 @@ public class CourierCreationTest {
     @Test
     @DisplayName("Cannot create courier without password")
     public void cannotCreateWithoutPassword() {
+        CourierModel courier = new CourierModel(login, null, FIRST_NAME);
         given()
             .spec(RestAssuredConfig.getBaseSpec())
             .contentType(ContentType.JSON)
-            .body("{\"login\":\"" + login + "\", \"firstName\":\"" + FIRST_NAME + "\"}")
+            .body(courier)
             .when()
             .post("/courier")
             .then()
@@ -120,10 +126,11 @@ public class CourierCreationTest {
     @DisplayName("Cannot create courier without first name")
     //according to the API, first name is not stated as optional, but API ignores it
     public void cannotCreateWithoutFirstName() {
+        CourierModel courier = new CourierModel(login, PASSWORD, null);
         given()
             .spec(RestAssuredConfig.getBaseSpec())
             .contentType(ContentType.JSON)
-            .body("{\"login\":\"" + login + "\", \"password\":\"" + PASSWORD + "\"}")
+            .body(courier)
             .when()
             .post("/courier")
             .then()

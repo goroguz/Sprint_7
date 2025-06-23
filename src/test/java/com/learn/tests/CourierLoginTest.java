@@ -1,5 +1,6 @@
 package com.learn.tests;
 
+import com.learn.model.CourierModel;
 import com.learn.util.RestAssuredConfig;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.http.ContentType;
@@ -30,20 +31,22 @@ public class CourierLoginTest {
         login = "courier_login_" + UUID.randomUUID();
 
         // Создание нового курьера
+        CourierModel courier = new CourierModel(login, PASSWORD, FIRST_NAME);
         given()
             .spec(RestAssuredConfig.getBaseSpec())
             .contentType(ContentType.JSON)
-            .body("{\"login\":\"" + login + "\", \"password\":\"" + PASSWORD + "\", \"firstName\":\"" + FIRST_NAME + "\"}")
+            .body(courier)
             .when()
             .post(PATH_COURIER)
             .then()
             .statusCode(201);
 
         // Получаем его ID
+        courier = new CourierModel(login, PASSWORD, null);
         Response loginResponse = given()
             .spec(RestAssuredConfig.getBaseSpec())
             .contentType(ContentType.JSON)
-            .body("{\"login\":\"" + login + "\", \"password\":\"" + PASSWORD + "\"}")
+            .body(courier)
             .when()
             .post(PATH_COURIER_LOGIN);
 
@@ -66,10 +69,11 @@ public class CourierLoginTest {
     @Test
     @DisplayName("Courier can login successfully")
     public void courierCanLogin() {
+        CourierModel courier = new CourierModel(login, PASSWORD, null);
         given()
             .spec(RestAssuredConfig.getBaseSpec())
             .contentType(ContentType.JSON)
-            .body("{\"login\":\"" + login + "\", \"password\":\"" + PASSWORD + "\"}")
+            .body(courier)
             .when()
             .post(PATH_COURIER_LOGIN)
             .then()
@@ -80,10 +84,11 @@ public class CourierLoginTest {
     @Test
     @DisplayName("Login without password returns error")
     public void loginWithoutPasswordReturnsError() {
+        CourierModel courier = new CourierModel(login, null, null);
         given()
             .spec(RestAssuredConfig.getBaseSpec())
             .contentType(ContentType.JSON)
-            .body("{\"login\":\"" + login + "\"}")
+            .body(courier)
             .when()
             .post(PATH_COURIER_LOGIN)
             .then()
@@ -94,10 +99,11 @@ public class CourierLoginTest {
     @Test
     @DisplayName("Login with wrong password returns error")
     public void loginWithWrongPasswordReturnsError() {
+        CourierModel courier = new CourierModel(login, "wrongpass", null);
         given()
             .spec(RestAssuredConfig.getBaseSpec())
             .contentType(ContentType.JSON)
-            .body("{\"login\":\"" + login + "\", \"password\":\"wrongpass\"}")
+            .body(courier)
             .when()
             .post(PATH_COURIER_LOGIN)
             .then()
@@ -108,10 +114,11 @@ public class CourierLoginTest {
     @Test
     @DisplayName("Login without login returns error")
     public void loginWithoutLoginReturnsError() {
+        CourierModel courier = new CourierModel(null, PASSWORD, null);
         given()
             .spec(RestAssuredConfig.getBaseSpec())
             .contentType(ContentType.JSON)
-            .body("{\"password\":\"" + PASSWORD + "\"}")
+            .body(courier)
             .when()
             .post(PATH_COURIER_LOGIN)
             .then()
@@ -122,10 +129,11 @@ public class CourierLoginTest {
     @Test
     @DisplayName("Login with non-existent courier returns error")
     public void loginNonExistentCourierReturnsError() {
+        CourierModel courier = new CourierModel("nonexistent_user_" + UUID.randomUUID(), PASSWORD, null);
         given()
             .spec(RestAssuredConfig.getBaseSpec())
             .contentType(ContentType.JSON)
-            .body("{\"login\":\"nonexistent_user_" + UUID.randomUUID() + "\", \"password\":\"pass\"}")
+            .body(courier)
             .when()
             .post(PATH_COURIER_LOGIN)
             .then()
@@ -136,10 +144,11 @@ public class CourierLoginTest {
     @Test
     @DisplayName("Login returns courier ID")
     public void loginReturnsCourierId() {
+        CourierModel courier = new CourierModel(login, PASSWORD, null);
         Response response = given()
             .spec(RestAssuredConfig.getBaseSpec())
             .contentType(ContentType.JSON)
-            .body("{\"login\":\"" + login + "\", \"password\":\"" + PASSWORD + "\"}")
+            .body(courier)
             .when()
             .post(PATH_COURIER_LOGIN);
 
