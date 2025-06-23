@@ -68,7 +68,7 @@ public class CourierLoginTest {
 
     @Test
     @DisplayName("Courier can login successfully")
-    public void courierCanLogin() {
+    public void courierCanLoginTest() {
         CourierModel courier = new CourierModel(login, PASSWORD, null);
         given()
             .spec(RestAssuredConfig.getBaseSpec())
@@ -83,7 +83,7 @@ public class CourierLoginTest {
 
     @Test
     @DisplayName("Login without password returns error")
-    public void loginWithoutPasswordReturnsError() {
+    public void loginWithoutPasswordReturnsErrorTest() {
         CourierModel courier = new CourierModel(login, null, null);
         given()
             .spec(RestAssuredConfig.getBaseSpec())
@@ -98,7 +98,7 @@ public class CourierLoginTest {
 
     @Test
     @DisplayName("Login with wrong password returns error")
-    public void loginWithWrongPasswordReturnsError() {
+    public void loginWithWrongPasswordReturnsErrorTest() {
         CourierModel courier = new CourierModel(login, "wrongpass", null);
         given()
             .spec(RestAssuredConfig.getBaseSpec())
@@ -113,7 +113,7 @@ public class CourierLoginTest {
 
     @Test
     @DisplayName("Login without login returns error")
-    public void loginWithoutLoginReturnsError() {
+    public void loginWithoutLoginReturnsErrorTest() {
         CourierModel courier = new CourierModel(null, PASSWORD, null);
         given()
             .spec(RestAssuredConfig.getBaseSpec())
@@ -128,7 +128,7 @@ public class CourierLoginTest {
 
     @Test
     @DisplayName("Login with non-existent courier returns error")
-    public void loginNonExistentCourierReturnsError() {
+    public void loginNonExistentCourierReturnsErrorTest() {
         CourierModel courier = new CourierModel("nonexistent_user_" + UUID.randomUUID(), PASSWORD, null);
         given()
             .spec(RestAssuredConfig.getBaseSpec())
@@ -143,7 +143,7 @@ public class CourierLoginTest {
 
     @Test
     @DisplayName("Login returns courier ID")
-    public void loginReturnsCourierId() {
+    public void loginReturnsCourierIdTest() {
         CourierModel courier = new CourierModel(login, PASSWORD, null);
         Response response = given()
             .spec(RestAssuredConfig.getBaseSpec())

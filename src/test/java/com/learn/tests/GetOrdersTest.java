@@ -18,7 +18,7 @@ public class GetOrdersTest {
 
     @Test
     @DisplayName("Get orders returns a list of orders")
-    public void testGetOrdersReturnsList() {
+    public void testGetOrdersReturnsListTest() {
         Response response = given()
             .when()
             .get("/api/v1/orders")

@@ -44,7 +44,7 @@ public class CreateOrderTest {
 
     @Test
     @DisplayName("Create order with color variants")
-    public void testCreateOrderWithColorVariants() {
+    public void testCreateOrderWithColorVariantsTest() {
         Map<String, Object> order = new HashMap<>();
         order.put("firstName", "Test");
         order.put("lastName", "Testov");

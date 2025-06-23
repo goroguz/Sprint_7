@@ -72,13 +72,13 @@ public class CourierCreationTest {
 
     @Test
     @DisplayName("Create courier with unique login")
-    public void createCourierWithUniqueLogin() {
+    public void createCourierWithUniqueLoginTest() {
         createCourier(login);
     }
 
     @Test
     @DisplayName("Cannot create courier with duplicate login")
-    public void cannotCreateDuplicateCourier() {
+    public void cannotCreateDuplicateCourierTest() {
         CourierModel courier = new CourierModel(login, PASSWORD, FIRST_NAME);
         createCourier(login);
         given()
@@ -94,7 +94,7 @@ public class CourierCreationTest {
 
     @Test
     @DisplayName("Cannot create courier without login")
-    public void cannotCreateWithoutLogin() {
+    public void cannotCreateWithoutLoginTest() {
         CourierModel courier = new CourierModel(null, PASSWORD, FIRST_NAME);
         given()
             .spec(RestAssuredConfig.getBaseSpec())
@@ -109,7 +109,7 @@ public class CourierCreationTest {
 
     @Test
     @DisplayName("Cannot create courier without password")
-    public void cannotCreateWithoutPassword() {
+    public void cannotCreateWithoutPasswordTest() {
         CourierModel courier = new CourierModel(login, null, FIRST_NAME);
         given()
             .spec(RestAssuredConfig.getBaseSpec())
@@ -124,7 +124,7 @@ public class CourierCreationTest {
 
     @Test
     @DisplayName("It is possible to create courier without first name")
-    public void possibleToCreateWithoutFirstName() {
+    public void possibleToCreateWithoutFirstNameTest() {
         CourierModel courier = new CourierModel(login, PASSWORD, null);
         given()
             .spec(RestAssuredConfig.getBaseSpec())
