@@ -31,8 +31,8 @@ public class CourierCreationTest {
         login = "courier_creation_" + UUID.randomUUID();
     }
 
-    @Step("Create a courier with a unique login")
-    private void createCourier(String login) {
+    @Step("Create a courier and expect status {expectedStatus}")
+    private void createCourier(String login, int expectedStatus) {
         CourierModel courier = new CourierModel(login, PASSWORD, FIRST_NAME);
         given()
             .spec(RestAssuredConfig.getBaseSpec())
@@ -41,7 +41,7 @@ public class CourierCreationTest {
             .when()
             .post("/courier")
             .then()
-            .statusCode(anyOf(is(201), is(409)));
+            .statusCode(expectedStatus);
     }
 
     @After
@@ -72,24 +72,15 @@ public class CourierCreationTest {
     @DisplayName("Create courier with unique login")
     @Description("Verifies that a new courier can be successfully created using a unique login.")
     public void createCourierWithUniqueLoginTest() {
-        createCourier(login);
+        createCourier(login, 201);
     }
 
     @Test
     @DisplayName("Cannot create courier with duplicate login")
     @Description("Verifies that creating a courier with an already existing login returns a 409 Conflict status.")
     public void cannotCreateDuplicateCourierTest() {
-        CourierModel courier = new CourierModel(login, PASSWORD, FIRST_NAME);
-        createCourier(login);
-        given()
-            .spec(RestAssuredConfig.getBaseSpec())
-            .contentType(ContentType.JSON)
-            .body(courier)
-            .when()
-            .post("/courier")
-            .then()
-            .statusCode(409)
-            .body("message", containsString("Этот логин уже используется"));
+        createCourier(login, 201);
+        createCourier(login, 409);
     }
 
     @Test
