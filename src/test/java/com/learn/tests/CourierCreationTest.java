@@ -21,16 +21,14 @@ import static org.hamcrest.Matchers.*;
 @RunWith(JUnit4.class)
 public class CourierCreationTest {
 
-    static final String PASSWORD = "1234";
-    static final String FIRST_NAME = "John";
-    public static final String NOT_ENOUGHT_DATA_TO_CREATE_ACOCUNT = "Недостаточно данных для создания учетной записи";
-    static String login;
-    static Integer courierId;
+    private static final String PASSWORD  = "1234";
+    private static final String FIRST_NAME = "John";
+    private static final String NOT_ENOUGHT_DATA_TO_CREATE_ACOCUNT = "Недостаточно данных для создания учетной записи";
+    private String login;
 
     @Before
     public void setup() {
         login = "courier_creation_" + UUID.randomUUID();
-        courierId = null;
     }
 
     @Step("Create a courier with a unique login")
@@ -44,29 +42,29 @@ public class CourierCreationTest {
             .post("/courier")
             .then()
             .statusCode(anyOf(is(201), is(409)));
-
-        courier = new CourierModel(login, PASSWORD, null);
-        Response loginResponse = given()
-            .spec(RestAssuredConfig.getBaseSpec())
-            .contentType(ContentType.JSON)
-            .body(courier)
-            .when()
-            .post("/courier/login");
-
-        if (loginResponse.statusCode() == 200) {
-            courierId = loginResponse.jsonPath().getInt("id");
-        }
     }
 
     @After
     public void cleanupCourier() {
-        if (courierId != null) {
+        CourierModel credentials = new CourierModel(login, PASSWORD, null);
+        Response loginResp = given()
+            .spec(RestAssuredConfig.getBaseSpec())
+            .contentType(ContentType.JSON)
+            .body(credentials)
+            .when()
+            .post("/courier/login");
+
+        if (loginResp.statusCode() == 200) {
+            int id = loginResp.jsonPath().getInt("id");
             given()
                 .spec(RestAssuredConfig.getBaseSpec())
                 .when()
-                .delete("/courier/" + courierId)
+                .delete("/courier/" + id)
                 .then()
                 .statusCode(anyOf(is(200), is(404)));
+        } else {
+            System.out.printf("Cleanup skipped: courier '%s' not found (%d)%n",
+                login, loginResp.statusCode());
         }
     }
 

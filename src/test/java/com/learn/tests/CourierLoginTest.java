@@ -25,12 +25,10 @@ public class CourierLoginTest {
     private static final String PATH_COURIER_LOGIN = "/courier/login";
 
     private String login;
-    private Integer courierId;
 
     @Before
     public void setup() {
         login = "courier_login_" + UUID.randomUUID();
-
         CourierModel courier = new CourierModel(login, PASSWORD, FIRST_NAME);
         given()
             .spec(RestAssuredConfig.getBaseSpec())
@@ -40,28 +38,29 @@ public class CourierLoginTest {
             .post(PATH_COURIER)
             .then()
             .statusCode(201);
-
-        courier = new CourierModel(login, PASSWORD, null);
-        Response loginResponse = given()
-            .spec(RestAssuredConfig.getBaseSpec())
-            .contentType(ContentType.JSON)
-            .body(courier)
-            .when()
-            .post(PATH_COURIER_LOGIN);
-
-        if (loginResponse.statusCode() == 200) {
-            courierId = loginResponse.jsonPath().getInt("id");
-        }
     }
 
     @After
-    public void tearDown() {
-        if (courierId != null) {
+    public void cleanupCourier() {
+        CourierModel credentials = new CourierModel(login, PASSWORD, null);
+        Response loginResp = given()
+            .spec(RestAssuredConfig.getBaseSpec())
+            .contentType(ContentType.JSON)
+            .body(credentials)
+            .when()
+            .post(PATH_COURIER_LOGIN);
+
+        if (loginResp.statusCode() == 200) {
+            int id = loginResp.jsonPath().getInt("id");
             given()
                 .spec(RestAssuredConfig.getBaseSpec())
-                .delete(PATH_COURIER + "/" + courierId)
+                .when()
+                .delete(PATH_COURIER + id)
                 .then()
                 .statusCode(anyOf(is(200), is(404)));
+        } else {
+            System.out.printf("Cleanup skipped: courier '%s' not found (%d)%n",
+                login, loginResp.statusCode());
         }
     }
 
