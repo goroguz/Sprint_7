@@ -1,8 +1,8 @@
 package com.learn.tests;
 
-import com.learn.util.RestAssuredConfig;
+import com.learn.service.OrderService;
+import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.junit.After;
 import org.junit.Before;
@@ -12,18 +12,16 @@ import org.junit.runners.Parameterized;
 
 import java.util.*;
 
-import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.AnyOf.anyOf;
 import static org.hamcrest.core.Is.is;
-
-import io.qameta.allure.Description;
 
 @RunWith(Parameterized.class)
 public class CreateOrderTest {
 
     private final List<String> color;
     private Integer createdTrack;
+    private final OrderService orderService = new OrderService();
 
     public CreateOrderTest(List<String> color) {
         this.color = color;
@@ -59,12 +57,7 @@ public class CreateOrderTest {
         order.put("comment", "Please be gentle");
         order.put("color", color);
 
-        Response response = given()
-            .spec(RestAssuredConfig.getBaseSpec())
-            .contentType(ContentType.JSON)
-            .body(order)
-            .when()
-            .post("/orders");
+        Response response = orderService.createOrder(order);
 
         response.then()
             .statusCode(201)
@@ -76,12 +69,7 @@ public class CreateOrderTest {
     @After
     public void tearDown() {
         if (createdTrack != null) {
-            given()
-                .spec(RestAssuredConfig.getBaseSpec())
-                .contentType(ContentType.JSON)
-                .body(Collections.singletonMap("track", createdTrack))
-                .when()
-                .put("/orders/cancel")
+            orderService.getOrderTrack(createdTrack)
                 .then()
                 .statusCode(anyOf(is(200), is(400))); // 400 — if already canceled
         }
